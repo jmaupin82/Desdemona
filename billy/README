@@ -1,0 +1,19 @@
+Billy - a 10x10 Othello Board
+
+To run Billy, adapt if necessary the content of billy.sh (for unix/linux platforms)
+or of billy.bat (for windows platforms) and then launch this script.
+
+To run Billy on a littlegolem game, run ten.sh (unix/linux) or ten.bat (windows)
+with the id of the game as single argument (you may also need to adapt some paths or
+to install wget).
+
+For instance:
+
+$> ten 334345
+
+will fetch the game number 334345 from littlegolem and open Billy on it.
+
+Just tell me if you encounter any problem.
+
+Claude <claude@renegat.net>
+
