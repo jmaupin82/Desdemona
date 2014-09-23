@@ -27,6 +27,9 @@ public class Driver {
 		this.numberOfMoves = 0;
 	}
 	
+	/**
+	 * This function starts and drives a game.
+	 */
 	public void startGame() {
 		Player currentPlayer = playerWhite;
 		
