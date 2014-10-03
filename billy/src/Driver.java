@@ -75,7 +75,7 @@ public class Driver {
 		int winLose = 0;
 		
 		try {
-		File file = new File("/home/eleal/Desktop/avgNumMoves.txt");
+		File file = new File("avgNumMoves.txt");
 		if(diskDifferential >0) {
 			winLose = 1;
 		}
