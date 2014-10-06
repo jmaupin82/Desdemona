@@ -5,6 +5,11 @@ public class NeuralLayer {
 	private int numNeurons;
 	private int numInputs;
 	
+	/**
+	 * 
+	 * @param inputs		The number of inputs to the layer.
+	 * @param neurons		The number of neurons in layer.
+	 */
 	public NeuralLayer(int inputs, int neurons){
 		this.numNeurons = neurons;
 		this.numInputs = inputs;
@@ -52,6 +57,5 @@ public class NeuralLayer {
 		}
 		return result;
 	}
-	
-	//TODO implement backprop
+
 }
