@@ -15,5 +15,8 @@ public class Move {
 		return square;
 	}
 
+	public String toString(){
+		return square.toString();
+	}
 	
 }

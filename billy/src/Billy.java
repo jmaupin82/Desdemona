@@ -104,7 +104,7 @@ public class Billy extends Frame implements Constants, ActionListener {
         add(buttons,BorderLayout.NORTH);
 
         pack();
-        //setVisible(true);
+        setVisible(true);
 
         String title = "Billy";
 

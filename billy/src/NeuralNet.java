@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,8 +8,13 @@ import java.util.ArrayList;
  * @author joelmaupin
  *
  */
-public class NeuralNet {
+public class NeuralNet implements Serializable{
 
+	/**
+	 * Version id for our Serialization
+	 */
+	private static final long serialVersionUID = 5607742528650919974L;
+	
 	private NeuralLayer hidden;
 	private NeuralLayer output;
 	private static int numHidden = 200;
