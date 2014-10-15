@@ -1,12 +1,24 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 
 public class HumanPlayer extends Player{
 
-
+	private FileOutputStream reader;
+	
 	public HumanPlayer(){
 		this.name = "Human Player";
+		String filename = (new Date()).toString() + "neuralOuput.txt";
+		try {
+			this.reader = new FileOutputStream(new File(filename));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public HumanPlayer(String name){

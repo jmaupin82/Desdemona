@@ -52,7 +52,8 @@ public class NeuralPlayer extends Player {
 	
 	@Override
 	public Move makeMove(Board board) {
-		// TODO Auto-generated method stub
+		// TODO tie this into the logic of choosing a move
+		
 		return null;
 	}
 }
