@@ -7,6 +7,8 @@ public abstract class Player {
 	 * 
 	 */
 	String name;
+	Billy billy;
+	int color;
 	
 	public abstract Move makeMove(Board board);
 	
@@ -27,5 +29,21 @@ public abstract class Player {
 			}
 		}
 		return validMoves;
+	}
+	
+	public void setColor(int c){
+		this.color = c;
+	}
+	
+	public int getColor(){
+		return this.color;
+	}
+	
+	public void setBilly(Billy b){
+		this.billy = b;
+	}
+	
+	public Billy getBilly(){
+		return this.billy;
 	}
 }

@@ -3,13 +3,20 @@ import java.util.Random;
 
 
 public class GreedyPlayer extends Player{
-
+	
 	public GreedyPlayer(){
 		this.name = "Greedy Player";
 	}
 
 	public GreedyPlayer(String name){
 		this.name = name;
+		
+	}
+	
+	public GreedyPlayer(String name, Billy billy, int color){
+		this.billy = billy;
+		this.name = name;
+		this.color = color;
 	}
 
 	@Override
@@ -20,14 +27,22 @@ public class GreedyPlayer extends Player{
 		// First find all the valid moves in this board state.
 		ArrayList<Move> validMoves = getValidMoves(board);
 
-		// Throw a die and sample one valid move from a uniform 
-		// distribution.
-		Random randGen = new Random();	
-		//System.out.println(validMoves.size());
-		int randomMoveIdx = randGen.nextInt(validMoves.size());
 
-
-		return validMoves.get(randomMoveIdx);
+		return getBestMove(board, validMoves);
+	}
+	
+	/**
+	 * 
+	 * @param board 	Current game board
+	 * @param m			The move to be evaluated
+	 * @return			A double representing the value of that move. Here just counts number of own pieces. 
+	 */
+	public double simpleEvaluate(Board board, Move m){
+		this.billy.makeMove(m.getSquare());
+		board = billy.getBoard();
+		int temp = board.count(this.color);
+		//board.prev();
+		return temp;
 	}
 	
 	/**
@@ -35,12 +50,19 @@ public class GreedyPlayer extends Player{
 	 * the most stones. 
 	 * @return		A move object that is the greediest possible move.
 	 */
-	public Move getBestMove(Board board){
-		
-		
-		
-		
-		return null;
+	public Move getBestMove(Board board, ArrayList<Move> moves){
+		Move result = moves.get(0);
+		double best = Double.MIN_VALUE;
+		for(Move m : moves){
+			double temp = simpleEvaluate(board, m);
+			//System.out.println(temp);
+			if(temp > best){
+				best = temp;
+				result = m;
+			}
+		}
+		System.out.println("best outcome: " + best);
+		return result;
 	}
 
 }

@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,13 +26,18 @@ public class Driver {
 		billy.go(new String[0]);
 		this.board       = billy.getBoard();
 		this.numberOfMoves = 0;
+		// give the players the board and billy objects
+		this.playerBlack.setBilly(this.billy);
+		this.playerBlack.setColor(Constants.BLACK);
+		this.playerWhite.setBilly(this.billy);
+		this.playerWhite.setColor(Constants.WHITE);
 	}
 	
 	/**
 	 * This function starts and drives a game.
 	 */
 	public void startGame() {
-		Player currentPlayer = playerWhite;
+		Player currentPlayer = playerBlack;
 		
 		while(notEndOfGame(board, currentPlayer)) {
 			// Ask the white player to provide a move.

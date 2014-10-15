@@ -24,6 +24,8 @@ public class HumanPlayer extends Player{
 	public HumanPlayer(String name){
 		this.name = name;
 	}
+	
+	
 	@Override
 	public Move makeMove(Board board) {
 

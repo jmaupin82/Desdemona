@@ -9,7 +9,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < numGames; i++) {
 			Player randomWhite = new RandomPlayer();
-			Player randomBlack = new HumanPlayer();
+			Player randomBlack = new GreedyPlayer();
 			Driver driver = new Driver(randomWhite, randomBlack);
 		
 			driver.startGame();
