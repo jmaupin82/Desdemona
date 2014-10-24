@@ -1,6 +1,9 @@
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 
 /**
  * This class implements a random Othello player that simply
@@ -11,18 +14,16 @@ import java.util.Random;
  */
 public class RandomPlayer extends Player {
 
-	public RandomPlayer() {
-		this.name = "Random Player";
-	}
 	
-	public RandomPlayer(String name) {
-		this.name = name;
+	public RandomPlayer(String name, int color) {
+		super(name, color);
 	}
 
 	@Override
 	public Move makeMove(Board board) {
 		// First find all the valid moves in this board state.
-		ArrayList<Move> validMoves = getValidMoves(board);
+		//ArrayList<Move> validMoves = findValidMoves(board);
+		ArrayList<Move> validMoves = board.findPossibleMoves(getColor());
 		
 		// Throw a die and sample one valid move from a uniform 
 		// distribution.
@@ -33,5 +34,11 @@ public class RandomPlayer extends Player {
 		
 		return validMoves.get(randomMoveIdx);
 	}
-
+	
+	@Override
+	public void postMoveProcessing(Board oldBoard, Board newBoard, 
+			Player whoPlayed) {}
+	
+	@Override
+	public void endOfGame(int diskDifferential) {} 
 }

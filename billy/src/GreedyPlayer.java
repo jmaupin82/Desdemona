@@ -14,7 +14,7 @@ public class GreedyPlayer extends Player{
 	}
 	
 	public GreedyPlayer(String name, Billy billy, int color){
-		this.billy = billy;
+		//this.billy = billy;
 		this.name = name;
 		this.color = color;
 	}
@@ -38,8 +38,8 @@ public class GreedyPlayer extends Player{
 	 * @return			A double representing the value of that move. Here just counts number of own pieces. 
 	 */
 	public double simpleEvaluate(Board board, Move m){
-		this.billy.makeMove(m.getSquare());
-		board = billy.getBoard();
+//		this.billy.makeMove(m.getSquare());
+//		board = billy.getBoard();
 		int temp = board.count(this.color);
 		//board.prev();
 		return temp;
@@ -61,8 +61,21 @@ public class GreedyPlayer extends Player{
 				result = m;
 			}
 		}
-		System.out.println("best outcome: " + best);
+		//System.out.println("best outcome: " + best);
 		return result;
+	}
+
+	@Override
+	public void postMoveProcessing(Board oldBoard, Board newBoard,
+			Player whoPlayed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endOfGame(int diskDifferential) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

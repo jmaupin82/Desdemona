@@ -24,6 +24,9 @@ public class HumanPlayer extends Player{
 	public HumanPlayer(String name){
 		this.name = name;
 	}
+	public HumanPlayer(String name, int color){
+		super(name, color);
+	}
 	
 	
 	@Override
@@ -47,6 +50,19 @@ public class HumanPlayer extends Player{
 			}
 		}
 
+	}
+
+	@Override
+	public void postMoveProcessing(Board oldBoard, Board newBoard,
+			Player whoPlayed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endOfGame(int diskDifferential) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

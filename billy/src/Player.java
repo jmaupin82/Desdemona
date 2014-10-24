@@ -1,18 +1,39 @@
+
 import java.util.ArrayList;
-import java.util.List;
 
 
 public abstract class Player {
 	/** 
 	 * 
 	 */
-	String name;
-	Billy billy;
-	int color;
+	protected String name;
 	
+	protected int color;
+	
+	public Player() {
+		this.name = "Default Player";
+		this.color = 0;
+	}
+	public Player(String name, int color) {
+		this.name  = name;
+		this.color = color;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
 	public abstract Move makeMove(Board board);
 	
-	protected ArrayList<Move> getValidMoves(Board board) {
+	public abstract void postMoveProcessing(Board oldBoard, Board newBoard, Player whoPlayed);
+	
+	public abstract void endOfGame(int diskDifferential);
+	
+	protected static ArrayList<Move> getValidMoves(Board board) {
 		ArrayList<Move> validMoves = new ArrayList<Move>();
 		
 		// Iterate over all the squares in the board, and check if they
@@ -29,21 +50,5 @@ public abstract class Player {
 			}
 		}
 		return validMoves;
-	}
-	
-	public void setColor(int c){
-		this.color = c;
-	}
-	
-	public int getColor(){
-		return this.color;
-	}
-	
-	public void setBilly(Billy b){
-		this.billy = b;
-	}
-	
-	public Billy getBilly(){
-		return this.billy;
 	}
 }

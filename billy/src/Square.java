@@ -81,4 +81,5 @@ public class Square extends Canvas implements Constants {
     public String toString() {
     	return "Square x =" + x + " y = " + y + " state= " + state;
     }
+ 
 }

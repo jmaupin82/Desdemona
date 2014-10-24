@@ -24,62 +24,71 @@ import java.util.ArrayList;
 import java.awt.Point;
 
 public class History {
+	List<Step> moves = new ArrayList<Step>();
+	int current;
 
-    public History() {
-        current = -1;
-    }
+	public History() {
+		current = -1;
+	}
+	
+	/**
+	 * Eleazar and Joel's method
+	 * @param h
+	 */
+	public History(History h) {
+		this.moves = new ArrayList<Step>();
+		this.moves.addAll(h.moves);
+		this.current = h.current;
+	}
 
-    public void add(int c,Point m) {
-        moves.add(new Step(c,m));
-    }
+	public void add(int c,Point m) {
+		moves.add(new Step(c,m));
+	}
 
-    public void play(int color,Point m,List<Point> ch) {
-        if(moves.size()>current+1) {
-            assert(color == getLastColor());
-            if (!m.equals(moves.get(current+1).move)) {
-                while(moves.size()>current+1) moves.remove(current+1);
-                moves.add(new Step(color,m,ch));
-            }
-            // trust the newcomer
-            moves.get(current+1).changed = ch;
-        }
-        else moves.add(new Step(color,m,ch));
-        current++;
-    }
+	public void play(int color,Point m,List<Point> ch) {
+		if(moves.size()>current+1) {
+			assert(color == getLastColor());
+			if (!m.equals(moves.get(current+1).move)) {
+				while(moves.size()>current+1) moves.remove(current+1);
+				moves.add(new Step(color,m,ch));
+			}
+			// trust the newcomer
+			moves.get(current+1).changed = ch;
+		}
+		else moves.add(new Step(color,m,ch));
+		current++;
+	}
 
-    public void forward(List<Point> ch) {
-        assert(moves.size()>current+1);
-        current++;
-        moves.get(current).changed = ch;
-    }
+	public void forward(List<Point> ch) {
+		assert(moves.size()>current+1);
+		current++;
+		moves.get(current).changed = ch;
+	}
 
-    public boolean hasPrev() { return current >= 0;}
+	public boolean hasPrev() { return current >= 0;}
 
-    public boolean hasNext() { return current < moves.size()-1;}
+	public boolean hasNext() { return current < moves.size()-1;}
 
-    public int size() { return moves.size(); }
+	public int size() { return moves.size(); }
 
-    public List<Point> takeBack() {
-        assert(current >=0 && moves.get(current).changed != null);
-        return moves.get(current--).changed;
-    }
+	public List<Point> takeBack() {
+		assert(current >=0 && moves.get(current).changed != null);
+		return moves.get(current--).changed;
+	}
 
-    public int getLastColor() { assert(current>=0); return moves.get(current).color; }
+	public int getLastColor() { assert(current>=0); return moves.get(current).color; }
 
-    public Point getLastMove() { assert(current>=0); return moves.get(current).move; }
+	public Point getLastMove() { assert(current>=0); return moves.get(current).move; }
 
-    public int getNextColor() { assert(moves.size()>current+1); return moves.get(current+1).color;}
+	public int getNextColor() { assert(moves.size()>current+1); return moves.get(current+1).color;}
 
-    public Point getNextMove() { assert(moves.size()>current+1); return moves.get(current+1).move;}
+	public Point getNextMove() { assert(moves.size()>current+1); return moves.get(current+1).move;}
 
-    class Step {
-        public Step(int c,Point m) { color = c; move = m; changed = null;}
-        public Step(int c,Point m,List ch) { color = c; move = m; changed = ch; }
-        public int color;
-        public Point move;
-        public List<Point> changed;
-    }
-
-    List<Step> moves = new ArrayList<Step>();
-    int current;
+	class Step {
+		public Step(int c,Point m) { color = c; move = m; changed = null;}
+		public Step(int c,Point m,List ch) { color = c; move = m; changed = ch; }
+		public int color;
+		public Point move;
+		public List<Point> changed;
+	}
 }
