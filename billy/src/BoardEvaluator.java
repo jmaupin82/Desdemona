@@ -9,6 +9,6 @@ public interface BoardEvaluator {
 	 * @param board
 	 * @return
 	 */
-	public abstract  double evaluateBoard(Board board);
+	public abstract  double evaluateBoard(LogicBoard board);
 	
 }

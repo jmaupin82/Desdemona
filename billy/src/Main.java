@@ -6,7 +6,7 @@ public class Main {
 	 * @param args
 	 */	
 	public static void main(String[] args) {
-		final int numGames = 2;
+		final int numGames = 10;
 		final int numPlies = 2;
 		final double gamma = 0.8;
 		final double lambda= 0.2;
@@ -22,8 +22,8 @@ public class Main {
 			Player randomWhite = new RandomPlayer("randomWhite", Constants.WHITE);
 			Player randomBlack = new RandomPlayer("randomBlack", Constants.BLACK);
 			Player mini = new MinimaxPlayer("randomBlack", Constants.BLACK, numPlies);
-			Player human = new HumanPlayer("Human", Constants.BLACK);
-			Driver driver = new Driver(randomWhite, human);
+			
+			Driver driver = new Driver(randomWhite, mini);
 			
 //			Player desdemona1 = new DesdemonaPlayer("randomBlack", Constants.WHITE, numPlies, gamma, lambda, alpha);
 //			Player desdemona2 = new DesdemonaPlayer("randomBlack", Constants.BLACK, numPlies, gamma, lambda, alpha,
@@ -36,8 +36,14 @@ public class Main {
 				System.out.println(i);
 			}
 		}
-//		Billy b = new Billy();
-//		b.go(args);
+		
+//		LogicBoard b = new LogicBoard();
+//		b.play(1, 1, 1);
+//		b.play(1, 8, 8);
+//		System.out.println(b);
+//		b.prev();
+//		
+//		System.out.println(b);
 		
 	}
 

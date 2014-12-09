@@ -9,58 +9,45 @@ import java.util.Scanner;
 public class HumanPlayer extends Player{
 
 	private FileOutputStream reader;
-	
-	public HumanPlayer(){
-		this.name = "Human Player";
-		String filename = (new Date()).toString() + "neuralOuput.txt";
-		try {
-			this.reader = new FileOutputStream(new File(filename));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
-	public HumanPlayer(String name){
-		this.name = name;
-	}
 	public HumanPlayer(String name, int color){
 		super(name, color);
 	}
 	
 	
 	@Override
-	public Move makeMove(Board board) {
+	public Move makeMove(LogicBoard board) {
 
 		//Ask the user to select a move by clicking on a square. 
-		ArrayList<Move> allMoves = getValidMoves(board);
+		ArrayList<Move> validMoves = board.findPossibleMoves(getColor());
 		System.out.println("Please select a move from the following list. ");
 		int count = 0;
-		for(Move m : allMoves){
+		for(Move m : validMoves){
 			System.out.println(count++ + ". " + m.toString());
 		}
 		Scanner scan = new Scanner(System.in);
 		while(true){
 			try{
 				int user = scan.nextInt();
-				return allMoves.get(user);
+				return validMoves.get(user);
 			}catch(Exception e){
 				System.out.println("You appear to have entered a wrong number.");
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 		}
 
 	}
 
 	@Override
-	public void postMoveProcessing(Board oldBoard, Board newBoard,
-			Player whoPlayed) {
+	public void endOfGame(int diskDifferential) {
 		// TODO Auto-generated method stub
 		
 	}
 
+
 	@Override
-	public void endOfGame(int diskDifferential) {
+	public void postMoveProcessing(LogicBoard oldBoard, LogicBoard newBoard,
+			Player whoPlayed) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 
 
 /**
@@ -12,19 +11,49 @@ import java.util.ArrayList;
  *
  */
 public class Driver {
-	Player playerWhite;
-	Player playerBlack;
-	Billy billy;
-	Board board;
-	int numberOfMoves;
+	private Player playerWhite;
+	private Player playerBlack;
+	private LogicBoard logicBoard;
+	
+	/** This implements the GUI */
+	private Billy billy;
+	private BoardGUI guiBoard;
+	
+	/** The number of moves that have been made  */
+	private int numberOfMoves;
+	
+	/** True iff the GUI is enabled */
+	private boolean enabledGUI;
 
 	public Driver(Player playerWhite, Player playerBlack) {
 		this.playerWhite = playerWhite;
+		this.playerBlack = playerBlack;		
+		this.logicBoard  = new LogicBoard();
+		
+		// No moves have been made
+		this.numberOfMoves = 0;
+		
+		// The GUI was not enabled.
+		this.enabledGUI = false;
+	}
+	
+	public Driver(Player playerWhite, Player playerBlack, boolean enableGUI) {
+		this.playerWhite = playerWhite;
 		this.playerBlack = playerBlack;
-		this.billy       = new Billy();
 
-		billy.go(new String[0]);
-		this.board         = billy.getBoard();
+		// Set the logic board.
+		this.logicBoard = new LogicBoard();
+		
+		if(enableGUI) {
+			// Set the GUI with billy
+			this.billy      = new Billy();
+			this.guiBoard   = billy.getBoard();
+			this.billy.go(new String[0]);		
+			// The GUI was not enabled.
+			this.enabledGUI = true;
+		}
+		
+		// No moves have been made
 		this.numberOfMoves = 0;
 	}
 
@@ -36,22 +65,38 @@ public class Driver {
 		Player currentPlayer = playerBlack;		
 		Player otherPlayer   = playerWhite;
 
-		while(board.notEndOfGame()) {
-			try {
-				//Thread.sleep(5000);
-			}
-			catch(Exception e) {}
+		//System.out.println(logicBoard);
+		
+		while(!logicBoard.EndOfGame()) {
+//			try {
+//				Thread.sleep(200);
+//			}
+//			catch(Exception e) {}
+			int currentColor  = currentPlayer.getColor();
+			
 			
 			// Ask the white player to provide a move.
-			Move move = currentPlayer.makeMove(board);
-
-			// Modify board with the white player's move.			
-			board = updateBoard(board, move);
-
+			Move move = currentPlayer.makeMove(logicBoard);
+			//System.out.println(logicBoard);
+			//System.out.println("im " + currentColor + " i play " + move + " num moves " + numberOfMoves );
+			
+			if(move == null) {
+				return logicBoard.getDiskDifferential();
+			}
+			
+			// Modify board with the white player's move.
+			
+			logicBoard.play(currentColor,move.getX(),move.getY());
+			
+			if(this.enabledGUI) {
+				guiBoard = updateBoard(guiBoard, move);
+			}
+			
+			//System.out.println(logicBoard);
 			// Give feedback to the player
 			//TO DO: UPDATE THE BOARD
-			currentPlayer.postMoveProcessing(board, board, currentPlayer);
-			otherPlayer.postMoveProcessing(board, board, currentPlayer);
+			currentPlayer.postMoveProcessing(logicBoard, logicBoard, currentPlayer);
+			otherPlayer.postMoveProcessing(logicBoard, logicBoard, currentPlayer);
 			
 			// Switch the players.
 			currentPlayer = switchPlayer(currentPlayer);
@@ -63,28 +108,33 @@ public class Driver {
 		
 		// In this function we tell the players who won, and they can do
 		// whatever else they need to do after the game ended.
-		postGameProcessing();
+		//postGameProcessing();
 		
-		return board.getDiskDifferential();
+		// The final number of white stones minus that of black stones.
+		int diskDifferential = logicBoard.getDiskDifferential();
+		
+		// Shutdown billy
+		//billy.dispose();
+		
+		return diskDifferential;
 	}
 
-
-
-	private Board updateBoard(Board oldBoard, Move move) {
-		billy.makeMove(move.getSquare());
-		Board newBoard = billy.getBoard();
-
+	private BoardGUI updateBoard(BoardGUI oldBoard, Move move) {
+		if(move == null) {System.err.println("move is null");}
+		billy.makeMove(oldBoard.getSquare(move.getX(), move.getY()));
+		BoardGUI newBoard = billy.getBoard();
+		//System.out.println("billys: " + newBoard);
 		return newBoard;
 	}
 
 	private void postGameProcessing() {
-		int numberWhiteStones = board.count(Constants.WHITE);
-		int numberBlackStones = board.count(Constants.BLACK);
+		int numberWhiteStones = logicBoard.count(Constants.WHITE);
+		int numberBlackStones = logicBoard.count(Constants.BLACK);
 		int diskDifferential = numberWhiteStones - numberBlackStones;
 		int winLose = 0;
 
 		try {
-			File file = new File("avgNumMoves2.txt");
+			File file = new File("/home/eleal/Desktop/avgNumMoves2.txt");
 			if(diskDifferential >0) {
 				winLose = 1;
 			}

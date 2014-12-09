@@ -1,21 +1,24 @@
 
 public class Move {
-	Board board;
-	Square square;
+	int x;
+	int y;
 	
-	public Move(Square square) {
-		this.square = square;
+	public Move(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	public Board getBoard() {
-		return board;
+	public int getX() {
+		return x;
 	}
 
-	public Square getSquare() {
-		return square;
+	public int getY() {
+		return y;
 	}
 	
+	public String toString() {
+		return "Move x= " + x + " y = " +y;
+	}
 	
-
 	
 }

@@ -46,7 +46,8 @@ public class NeuralNetReinforcement extends NeuralNet {
 	}
 
 
-	public void onlineTrain(double V_old, double V_new, double reward) {
+	public void onlineTrain(double V_old, double V_new, double reward,
+			double[] oldBoardNetInput) {
 
 		double[][] outputLayerWeights = getOutputLayerWeights();
 		double[][] hiddenLayerWeights = getHiddenLayerWeights();
@@ -54,7 +55,7 @@ public class NeuralNetReinforcement extends NeuralNet {
 		// Step 1. Update the output layer weights
 		for(int i = 0; i < getNumOutput(); i++) {
 			for(int j = 0; j < getNumHidden(); j++) {
-				
+
 				outputLayerWeights[i][j] += alpha * 
 						(reward + gamma * V_new - V_old) *
 						eligibilityTracesOutputWeights[i][j];
@@ -71,7 +72,12 @@ public class NeuralNetReinforcement extends NeuralNet {
 		}
 
 		// Calculate the grad_{weights}V(s).
-		double gradientV = 0.5;
+		// These 2 arrays will hold the value of the gradient evaluated
+		// at the old board, with respect to the weights.
+		double[][] hiddenWeightsGrad = new double[numHidden][numInput];
+		double[][] outputWeightsGrad = new double[numOutput][numHidden];
+		
+		calculateGradient(oldBoardNetInput, hiddenWeightsGrad, outputWeightsGrad);
 
 		// Update the eligibility traces according to the formula
 		// e(t) = gamma * lambda * e_{t-1} + grad_{weights} (V_t(s_t))
@@ -80,7 +86,7 @@ public class NeuralNetReinforcement extends NeuralNet {
 			for(int j = 0; j < getNumHidden(); j++) {
 				eligibilityTracesOutputWeights[i][j] = 
 						gamma * lambda * eligibilityTracesOutputWeights[i][j] +
-						gradientV;
+						outputWeightsGrad[i][j];
 			}
 		}
 		// Update the eligibility traces according to the formula
@@ -90,7 +96,7 @@ public class NeuralNetReinforcement extends NeuralNet {
 			for(int j = 0; j < getNumInput(); j++) {
 				eligibilityTracesHiddenWeights[i][j] = 
 						gamma * lambda * eligibilityTracesHiddenWeights[i][j] +
-						gradientV;
+						hiddenWeightsGrad[i][j];
 			}
 		}
 	}
@@ -114,4 +120,63 @@ public class NeuralNetReinforcement extends NeuralNet {
 			}
 		}
 	}
+
+	/**
+	 * This function implements the backpropagation algorithm.
+	 * 
+	 * Receives an array of inputs such that inputs[i][j] contains the jth
+	 * entry of the ith example.
+	 * 
+	 * Receives an array correctOuput such that correctOutput[i][j] contains
+	 * the jth correct output for the ith example.
+	 * 
+	 * @param input
+	 * @param hiddenWeightsDeriv
+	 *             This is the matrix with the derivative of the output of the net
+	 *             with respect to the hidden weights
+	 * @param outputWeightsDeriv
+	 * 	          This is the matrix with the derivative of the output of the net
+	 *             with respect to the output weights
+	 */
+	public void calculateGradient(double[] input, double[][] hiddenWeightsDeriv, 
+			double[][] outputWeightsDeriv) {
+
+		// Verify that the size of the inputs/outputs matches the number of inputs
+		// that the networks expects.
+		if(input.length != this.numInput) {
+			System.err.println("[ERROR] Bad Number! Check your input/output sizes");
+		}
+
+		double[] actual    = evaluateInputs(input);
+		double[] del_k     = new double[numOutput];
+		// This array will hold the value (1-o_j) ^2, where o_j is the output of
+		// neuron j of the output layer.
+		double[] tanhPrime = new double[numOutput];
+		
+		// Find the gradient with respect to the output layer weights
+		// For tanh the \derv{E}{w_{ji}} = (1-o_j)^2 * x_i
+		for(int k = 0; k < this.numOutput; ++k){
+			tanhPrime[k] = (1 - actual[k]) * (1 - actual[k]);
+			for(int j = 0; j < numHidden; ++j){
+				outputWeightsDeriv[k][j] = tanhPrime[k] * hiddenLayerOutput[j];
+			}
+		}
+
+		// Find the gradient with respect to the of hidden layer weights
+		for(int j = 0; j < this.numHidden; ++j){
+			double sum_del_k = 0.0;
+
+			for(int k = 0; k < numOutput; ++k){
+				sum_del_k += outputLayer.getWeights()[k][j] * tanhPrime[k];
+			}
+
+			double del_j = (1 - hiddenLayerOutput[j]) * 
+					(1 - hiddenLayerOutput[j]) * sum_del_k;
+
+			for(int i = 0; i < this.numInput; ++i){
+				hiddenWeightsDeriv[j][i] = del_j * input[i];
+			}
+		}
+	}
+
 }

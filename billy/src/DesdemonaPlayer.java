@@ -62,10 +62,10 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 	
 	public DesdemonaPlayer(String name, int color, int numPlies,
 			double gamma, double lambda, double alpha, double[][] hiddenLayerWeights,
-			double[][] outputLayerWeights){
+			double[][] outputLayerWeights, boolean isLearning){
 		super(name, color);
 
-		this.learn    = learn;
+		this.learn    = isLearning;
 		this.maxDepth = 2 * numPlies;
 		this.net      = new NeuralNetReinforcement(numInput, numHidden, numOutput,
 				gamma, lambda, alpha);
@@ -76,7 +76,7 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 	}
 
 	@Override
-	public Move makeMove(Board board) {
+	public Move makeMove(LogicBoard board) {
 
 		final int currentDepth = 0;
 		// alpha = -infty
@@ -86,7 +86,7 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 
 		// Take the board representation and create the input that
 		// will be provided to the neural net.
-		double[] netInput = makeNetInputFromBoard(board, this.getColor());
+		//double[] netInput = makeNetInputFromBoard(board, this.getColor());
 
 		// This implements the board evaluation function.
 		BoardEvaluator boardEvaluator = this;
@@ -99,22 +99,22 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 	}
 
 	@Override
-	public void postMoveProcessing(Board oldBoard, Board newBoard, Player whoPlayed) {
+	public void postMoveProcessing(LogicBoard oldBoard, LogicBoard newBoard, Player whoPlayed) {
 		double reward;
 
 		// Take the board representation and create the input that
 		// will be provided to the neural net.
-		double[] netInput = makeNetInputFromBoard(oldBoard, this.getColor());
+		double[] netInput  = makeNetInputFromBoard(oldBoard, this.getColor());
 		double[] oldVArray = net.evaluateInputs(netInput);
 		double V_old = oldVArray[0];
 
 		// This is to find V_new
-		netInput = makeNetInputFromBoard(oldBoard, this.getColor());
+		netInput = makeNetInputFromBoard(newBoard, this.getColor());
 		double[] newVArray = net.evaluateInputs(netInput);
 		double V_new = newVArray[0];
 
 		// Check if the game has ended
-		boolean gameEnded = newBoard.notEndOfGame();
+		boolean gameEnded = newBoard.EndOfGame();
 		int diskDifferential = newBoard.getDiskDifferential();
 
 		// Determine the reward in terms of the disk differential.
@@ -149,7 +149,8 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 		}
 		// Update the weights in the network with the observed reward and the
 		// difference between V_old and V_new.
-		net.onlineTrain(V_old, V_new, reward);
+		double[] oldBoardNetInput = netInput;
+		net.onlineTrain(V_old, V_new, reward, oldBoardNetInput);
 	}
 
 	@Override
@@ -273,18 +274,18 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 	 * @param player
 	 * @return
 	 */
-	private double[] makeNetInputFromBoard(Board board, int playerColor) {
+	private double[] makeNetInputFromBoard(LogicBoard board, int playerColor) {
 		// The +2 is to encode the turn and the bias
-		double [] netInput = new double[Board.SIZE * Board.SIZE + 2];
+		double [] netInput = new double[BoardGUI.SIZE * BoardGUI.SIZE + 2];
 
 		netInput[0] = 1; // the bias
 		netInput[1] = playerColor; // the turn
 
 		// For every position of the board (in row-major order) we get its
 		// state: either -1, 0, 1 and put it in the array of input.
-		for(int i = 0; i < Board.SIZE; i++) {
-			for(int j = 0; j < Board.SIZE; j++) {
-				netInput[i*Board.SIZE + j+2] = board.getSquare(i, j).getState();
+		for(int i = 0; i < BoardGUI.SIZE; i++) {
+			for(int j = 0; j < BoardGUI.SIZE; j++) {
+				netInput[i*BoardGUI.SIZE + j+2] = board.getSquare(i, j);
 			}
 		}
 
@@ -297,7 +298,7 @@ public class DesdemonaPlayer extends Player implements BoardEvaluator {
 	 * @param player
 	 * @return
 	 */
-	public double evaluateBoard(Board board) {
+	public double evaluateBoard(LogicBoard board) {
 		double[] input = makeNetInputFromBoard(board, this.getColor());
 
 		double boardValue = this.net.evaluateInputs(input)[0];

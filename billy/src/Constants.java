@@ -33,4 +33,7 @@ public interface Constants {
 
     public static final int increment[] = { -1,0,+1};
 
+    // This is the number of plies that the minimax agent will
+    // examine while training Iago.
+    public static final int numPliesIago = 2;
 }

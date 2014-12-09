@@ -1,22 +1,29 @@
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Random;
 
 /**
- * This class implements a chromosome, which is a mapping between the set of 
- * all discrete states and actions.
+ * This class implements a chromosome, which is a collection of coefficients
+ * of a linear combination of Othello heuristics.
  *
  */
 public class Chromosome implements Serializable {
 
+	private static final long serialVersionUID = 2904572892942180307L;
+
+	/** The coefficient multiplying stability */
 	private double stabilityCoef;
+	/** The coefficient multiplying parity */
 	private double parityCoef;
+	/** The coefficient multiplying mobility */
 	private double mobilityCoef;
+	/** The coefficient multiplying the difference between the number
+	 * of white and black stones */
 	private double differentialCoef;
-	private int numGenes = 4;
+	
+	/** The total number of genes above, which is 4*/
+	private static final int numGenes = 4;
 	
 	/**
 	 * This constructor creates a random chromosome with coefficients in [-1,1]
@@ -46,7 +53,6 @@ public class Chromosome implements Serializable {
 		this.differentialCoef = differentialCoef;
 	}
 	
-	
 	/**
 	 * This method returns a random individual.
 	 * @return
@@ -56,7 +62,6 @@ public class Chromosome implements Serializable {
 		
 		return individual;
 	}
-	
 	
 	/**
 	 * This method returns a set with a random population of size
@@ -77,12 +82,6 @@ public class Chromosome implements Serializable {
 	}
 	*/
 	
-	/**
-	 * This method is used to get the action associated with a certain discrete state.
-	 * @return
-	 */
-
-	
 	public double getStabilityCoef() {
 		return stabilityCoef;
 	}
@@ -99,6 +98,22 @@ public class Chromosome implements Serializable {
 		return differentialCoef;
 	}
 
+	public void setStabilityCoef(double stabilityCoef) {
+		this.stabilityCoef = stabilityCoef;
+	}
+
+	public void setParityCoef(double parityCoef) {
+		this.parityCoef = parityCoef;
+	}
+
+	public void setMobilityCoef(double mobilityCoef) {
+		this.mobilityCoef = mobilityCoef;
+	}
+
+	public void setDifferentialCoef(double differentialCoef) {
+		this.differentialCoef = differentialCoef;
+	}
+
 	/**
 	 * This method returns a set with a random population of size
 	 * populationSize.
@@ -113,8 +128,9 @@ public class Chromosome implements Serializable {
 		for(int i=0; i< populationSize; i++) {
 			population.add( Chromosome.getRandomChromosome() );
 		}
+		return null;
 		
-		return new Population(population);
+//		return new Population(population);
 	}
 	
 	/**
@@ -122,56 +138,39 @@ public class Chromosome implements Serializable {
 	 * @return
 	 */
 	public int getNumGenes() {
-		return this.numGenes;
+		return Chromosome.numGenes;
 	}
 	
-	
 	/**
-	 * Takes to individuals and performs crossover. We perform uniform 
+	 * Takes two individuals and performs crossover. We perform uniform 
 	 * crossover.
+	 * 
 	 * @param parentA
 	 * @param parentB
 	 * @return
 	 */
 	public static Chromosome reproduce(Chromosome parentA, Chromosome parentB){
-		LinkedHashMap<ChromosomeState, String> childPolicies = 
-				new LinkedHashMap<ChromosomeState, String>();
-		
-		// Make an arraylist out of the policies for parent A.
-		ArrayList<String> actionsParentA = new ArrayList<String>(parentA.getNumGenes());
-		
-		for(ChromosomeState policyA: parentA.policies.keySet()){	
-			actionsParentA.add(parentA.policies.get(policyA));
-		}
-		
-		// Make an array out of the policies for parent B.
-		ArrayList<String> actionsParentB = new ArrayList<String>(parentA.getNumGenes());
-		
-		for(ChromosomeState policyB: parentA.policies.keySet()){
-			actionsParentB.add(parentB.policies.get(policyB));		
-		}
+		// This will be the child chromosome.
+		Chromosome child = new Chromosome();
 		
 		Random randGen = new Random();
-		int nextActionIndex = 0;
 		
 		// Iterate through all possible states and randomly choose from which
 		// parent to inherit a certain gene.
-		for(ChromosomeState policyA: parentA.policies.keySet()){
+		for(int geneIndex = 0; geneIndex < Chromosome.numGenes; geneIndex++){
 			int randInt = randGen.nextInt(2);
 			
 			if(randInt == 0){
 				// Take gene from parent A.
-				childPolicies.put(policyA, actionsParentA.get(nextActionIndex));
+				child.setGeneByIndex(geneIndex, parentA.getGeneByIndex(geneIndex));
 			}
 			else {
 				// Take gene from parent B.
-				childPolicies.put(policyA, actionsParentB.get(nextActionIndex));
+				child.setGeneByIndex(geneIndex, parentB.getGeneByIndex(geneIndex));
 			}
-			nextActionIndex++;
 		}
 		
-		return new Chromosome(childPolicies);
-		
+		return child;
 	}
 	
 	/**
@@ -182,34 +181,68 @@ public class Chromosome implements Serializable {
 	 * @return
 	 */
 	public static Chromosome mutate(Chromosome individual, double mutationRatio){
-		int numGenesToMutate = (int) (mutationRatio * individual.getNumGenes());
+		int numGenesToMutate = (int) (mutationRatio * Chromosome.numGenes);
 		Random randGen = new Random();
-		
-		// Make an arraylist out of the policies for individual.
-		ArrayList<String> actionsIndividual = new ArrayList<String>(individual.getNumGenes());
-		
-		for(ChromosomeState policy: individual.policies.keySet()){	
-			actionsIndividual.add(individual.policies.get(policy));
-		}
 		
 		for(int i = 0; i < numGenesToMutate; i++){
 			// Choose a random gene.
-			int randomGeneIndex = randGen.nextInt(individual.getNumGenes());
+			int randomGeneIndex = randGen.nextInt(Chromosome.numGenes);
 			
-			// Replace that gene by a random one.
-			actionsIndividual.set(randomGeneIndex, ChromosomeState.getRandomAction());
+			// Add some random gaussian noise to that gene.
+			individual.setGeneByIndex(randomGeneIndex, 
+					individual.getGeneByIndex(randomGeneIndex) + randGen.nextGaussian());
 		}
-		
-		// Now we assemble the map of policies.
-		LinkedHashMap<ChromosomeState, String> newPolicies = 
-				new LinkedHashMap<ChromosomeState, String>();
-		
-		int i = 0;
-		for(ChromosomeState policy: individual.policies.keySet()){	
-			newPolicies.put(policy, actionsIndividual.get(i));
-			i++;
+
+		return individual;
+	}
+	
+	/**
+	 * Given an index, this returns the corresponding gene.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	private double getGeneByIndex(int index) {
+		switch(index) {
+		case 0:
+			return this.getStabilityCoef();	
+		case 1:
+			return this.getParityCoef();
+		case 2:
+			return this.getMobilityCoef();
+		case 3:
+			return this.getDifferentialCoef();
+		default:
+			// This should be unreachable.
+			System.err.println("[ERROR] No gene get by index");
+			return this.getStabilityCoef();
 		}
-		
-		return new Chromosome(newPolicies);
+	}
+	
+	/**
+	 * Given an index, this sets the corresponding gene.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	private void setGeneByIndex(int index, double value) {
+		switch(index) {
+		case 0:
+			this.setStabilityCoef(value);	
+			break;
+		case 1:
+			this.setParityCoef(value);
+			break;
+		case 2:
+			this.setMobilityCoef(value);
+			break;
+		case 3:
+			this.setDifferentialCoef(value);
+			break;
+		default:
+			// This should be unreachable.
+			System.err.println("[ERROR] No gene set by index");
+			return;
+		}
 	}
 }

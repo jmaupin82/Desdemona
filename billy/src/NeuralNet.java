@@ -8,13 +8,13 @@
  */
 public class NeuralNet {
 
-	private NeuralLayer hiddenLayer;
-	private NeuralLayer outputLayer;
-	private int numHidden;
-	private int numInput;
-	private int numOutput;
-	private double[] hiddenLayerOutput;
-	
+	protected NeuralLayer hiddenLayer;
+	protected NeuralLayer outputLayer;
+	protected int numHidden;
+	protected int numInput;
+	protected int numOutput;
+	protected double[] hiddenLayerOutput;
+
 	/**
 	 * 
 	 * @param numInput
@@ -28,8 +28,8 @@ public class NeuralNet {
 		this.hiddenLayer = new NeuralLayer(this.numInput, this.numHidden);
 		this.outputLayer = new NeuralLayer(this.numHidden, this.numOutput);
 	}
-	
-	
+
+
 	public int getNumHidden() {
 		return numHidden;
 	}
@@ -52,7 +52,7 @@ public class NeuralNet {
 	public void setHiddenLayerWeights(double[][] weights) {
 		this.hiddenLayer.setWeights(weights);
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -60,7 +60,7 @@ public class NeuralNet {
 	public double[][] getHiddenLayerWeights() {
 		return this.hiddenLayer.getWeights();
 	}
-	
+
 	/**
 	 * This sets the weights for the output layer.
 	 * @param weights
@@ -68,7 +68,7 @@ public class NeuralNet {
 	public void setOutputLayerWeights(double[][] weights) {
 		this.outputLayer.setWeights(weights);
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -76,7 +76,7 @@ public class NeuralNet {
 	public double[][] getOutputLayerWeights() {
 		return this.outputLayer.getWeights();
 	}
-	
+
 	/**
 	 * 
 	 * @param inputs	Input integers INCLUDING the bias.
@@ -88,16 +88,18 @@ public class NeuralNet {
 			System.err.println("[ERROR] The number of inputs " + 
 					inputs.length + " does not match with " + numInput);
 		}
-		
+
 		// Pass inputs into hidden layer
 		hiddenLayerOutput = this.hiddenLayer.evaluate(inputs);
-		
+
 		// Take the output from the hidden layer and pass it to the output layer.
 		double[] outputLayerOut = this.outputLayer.evaluate(hiddenLayerOutput);
-		
+//		for(int i = 0; i < outputLayerOut.length; ++i){
+//			System.out.println(outputLayerOut[i]);
+//		}
 		return outputLayerOut;
 	}
-	
+
 	/**
 	 * This function implements the backpropagation algorithm.
 	 * 
@@ -113,11 +115,9 @@ public class NeuralNet {
 	 * @return The mean squared error
 	 */
 	public double backpropagation(double[][] inputs, double[][] correctOutput, double eta) {
-//		double[][] hiddenWeights = hiddenLayer.getWeights();
-//		double[][] outputWeights = outputLayer.getWeights();
 		// The Mean-squared error
 		double meanSquaredError = 0.0;
-		
+
 		double[][] hiddenWeights = new double[hiddenLayer.getWeights().length][hiddenLayer.getWeights()[0].length];
 		double[][] outputWeights = new double[outputLayer.getWeights().length][outputLayer.getWeights()[0].length];
 		for(int i = 0; i < hiddenWeights.length; i++) {
@@ -130,27 +130,27 @@ public class NeuralNet {
 				outputWeights[i][j] = outputLayer.getWeights()[i][j];
 			}
 		}
-		
+
 		// This is the number of examples (that matches the number of rows
 		// of the matrix inputs.
 		final int numExamples = inputs.length;	
-		
+
 		// Verify that the size of the inputs/outputs matches the number of inputs
 		// that the networks expects.
 		if(inputs[0].length != this.numInput || correctOutput[0].length != this.numOutput) {
 			System.err.println("[ERROR] Bad Number! Check your input/output sizes");
 		}
-		
+
 		for(int example = 0; example < numExamples; example++) {
 			double[] actual = evaluateInputs(inputs[example]);
 			double[] del_k = new double[numOutput];
-			
+
 			// Add the mean squared error of the current example.
 			for(int k = 0; k < this.numOutput; ++k){
 				meanSquaredError += Math.pow(Math.abs((correctOutput[example][k] - actual[k])), 2);
 				//System.out.println("Example " + example + " " + actual[k]);
 			}
-			
+
 			// Update weights of output layer
 			for(int k = 0; k < this.numOutput; ++k){
 				del_k[k] = (correctOutput[example][k] - actual[k]) * (1 - actual[k]) * actual[k];
@@ -159,17 +159,17 @@ public class NeuralNet {
 					outputWeights[k][j] += delta_w_kj;
 				}
 			}
-			
+
 			// Update weights of hidden layer
 			for(int j = 0; j < this.numHidden; ++j){
 				double sum_del_k = 0.0;
-				
+
 				for(int k = 0; k < numOutput; ++k){
 					sum_del_k += outputLayer.getWeights()[k][j] * del_k[k];
 				}
-				
+
 				double del_j = hiddenLayerOutput[j] * (1 - hiddenLayerOutput[j]) * sum_del_k;
-				
+
 				for(int i = 0; i < this.numInput; ++i){
 					double delta_w_kj = eta * del_j * inputs[example][i];
 					hiddenWeights[j][i] += delta_w_kj;
@@ -196,6 +196,6 @@ public class NeuralNet {
 	 */
 	public static double sigmoid(double x)
 	{
-	    return 1 / (1 + Math.exp(-x));
+		return 1 / (1 + Math.exp(-x));
 	}
 }

@@ -28,7 +28,7 @@ public class Billy extends Frame implements Constants, ActionListener {
     /**
 	 * 
 	 */
-    Board board;
+    BoardGUI board;
     Panel buttons;
     Button first,last,prev,next;
     Canvas colorTag;
@@ -40,7 +40,7 @@ public class Billy extends Frame implements Constants, ActionListener {
 	private static final long serialVersionUID = -2218510212246872379L;
 	
 	
-	public Board getBoard() {
+	public BoardGUI getBoard() {
 		return board;
 	}
 
@@ -62,7 +62,7 @@ public class Billy extends Frame implements Constants, ActionListener {
 
         setLayout(new BorderLayout(0,0));
 
-        board = new Board();
+        board = new BoardGUI();
 
         add(board,BorderLayout.CENTER);
 
@@ -170,8 +170,10 @@ public class Billy extends Frame implements Constants, ActionListener {
 
     public void makeMove(Square square) {
         if (square.isClickable()) {
+        	System.out.println("billy clickable");
         	board.play(color,square.getXCoord(),square.getYCoord());
         }
+        
         updateStates();
     }
 

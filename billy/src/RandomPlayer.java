@@ -1,7 +1,6 @@
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 
@@ -20,11 +19,15 @@ public class RandomPlayer extends Player {
 	}
 
 	@Override
-	public Move makeMove(Board board) {
+	public Move makeMove(LogicBoard board) {
 		// First find all the valid moves in this board state.
 		//ArrayList<Move> validMoves = findValidMoves(board);
 		ArrayList<Move> validMoves = board.findPossibleMoves(getColor());
 		
+		//System.out.println("number of valid moves " + validMoves.size());
+		if(validMoves.size()>=0) {
+			//throw new RuntimeException();
+		}
 		// Throw a die and sample one valid move from a uniform 
 		// distribution.
 		Random randGen = new Random();	
@@ -36,7 +39,7 @@ public class RandomPlayer extends Player {
 	}
 	
 	@Override
-	public void postMoveProcessing(Board oldBoard, Board newBoard, 
+	public void postMoveProcessing(LogicBoard oldBoard, LogicBoard newBoard, 
 			Player whoPlayed) {}
 	
 	@Override
